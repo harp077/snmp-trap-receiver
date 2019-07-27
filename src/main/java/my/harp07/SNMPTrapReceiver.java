@@ -75,6 +75,10 @@ public class SNMPTrapReceiver implements CommandResponder {
     // test: # snmptrap -c public -v 2c 127.0.0.1 "" 1.3.3.3.3.3.3.3 1.2.2.2.2.2.2 s "Aliens opened the door"
     @Override
     public void processPdu(CommandResponderEvent event) {
+        if (!new String(event.getSecurityName()).equals("ромка1974")) {
+            System.out.println("!!! snmp-community mismatch from: " + event.getPeerAddress());
+            return;
+        }
         StringBuffer msg = new StringBuffer("\n");
         //System.out.println("event = "+event.toString());
         VariableBinding[] myVB = event.getPDU().toArray();
@@ -97,6 +101,10 @@ public class SNMPTrapReceiver implements CommandResponder {
         /*System.out.println("1 Message: " + msg.toString().split(";")[0]);
         System.out.println("2 Message: " + msg.toString().split(";")[1]);
         System.out.println("3 Message: " + msg.toString().split(";")[2]);*/
+        System.out.println("event.getPeerAddress() = " + event.getPeerAddress());
+        System.out.println("event.getSecurityLevel() = " + event.getSecurityLevel());
+        System.out.println("event.getSecurityModel() = " + event.getSecurityModel());
+        System.out.println("event.getSecurityName() = " + new String(event.getSecurityName()));        
     }
     
 }
