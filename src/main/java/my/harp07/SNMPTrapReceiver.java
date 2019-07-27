@@ -34,14 +34,8 @@ public class SNMPTrapReceiver implements CommandResponder {
     private Snmp snmp = null;
     private Address listenAddress;
     private ThreadPool threadPool;
-    //private int n = 0;
-    //private long start = -1;
 
-    public static void main(String[] args) {
-        new SNMPTrapReceiver().run();
-    }
-
-    private void run() {
+    public void run() {
         try {
             init();
             snmp.addCommandResponder(this);
