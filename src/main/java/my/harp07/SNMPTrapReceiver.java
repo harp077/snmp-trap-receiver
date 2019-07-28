@@ -97,7 +97,7 @@ public class SNMPTrapReceiver implements CommandResponder {
             //Arrays.asList(myVB).stream().forEach(x -> msg.append(x.toValueString()).append(";\n"));
         }
         //System.out.println("event.getPDU() = "+event.getPDU().toString());
-        System.out.println("Message Received: " + msg.toString());
+        System.out.println("\n=============\nMessage Received: " + msg.toString());
         /*System.out.println("1 Message: " + msg.toString().split(";")[0]);
         System.out.println("2 Message: " + msg.toString().split(";")[1]);
         System.out.println("3 Message: " + msg.toString().split(";")[2]);*/
