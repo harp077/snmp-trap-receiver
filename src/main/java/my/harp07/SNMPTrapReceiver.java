@@ -2,6 +2,11 @@ package my.harp07;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import static my.harp07.ISDTF.sdf;
+import static my.harp07.ISDTF.stf;
 import org.apache.commons.lang3.StringUtils;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
@@ -34,6 +39,7 @@ public class SNMPTrapReceiver implements CommandResponder {
     private Snmp snmp = null;
     private Address listenAddress;
     private ThreadPool threadPool;
+    private List<ModelSnmpTrap> listTraps=new ArrayList<>();
 
     public void run() {
         try {
@@ -82,7 +88,12 @@ public class SNMPTrapReceiver implements CommandResponder {
         StringBuffer msg = new StringBuffer("\n");
         //System.out.println("event = "+event.toString());
         VariableBinding[] myVB = event.getPDU().toArray();
+        ModelSnmpTrap mst=new ModelSnmpTrap();        
         if (myVB != null && myVB.length > 0) {
+            mst.setIp(StringUtils.substringBefore(event.getPeerAddress().toString(),"/"));
+            mst.setCommunity(new String(event.getSecurityName()));
+            mst.setDate(sdf.format(new Date()));
+            mst.setTime(stf.format(new Date()));
             for (VariableBinding x : myVB) {
                 if (x.toValueString().contains(":") && StringUtils.isNumeric(x.toValueString().replace(":", "9").replace(".", "9"))) {
                     msg.append("uptime = " + x.toValueString()).append(";\n");
@@ -90,13 +101,15 @@ public class SNMPTrapReceiver implements CommandResponder {
                 }
                 if (x.toValueString().contains(".") && StringUtils.isNumeric(x.toValueString().replace(".", "9"))) {
                     msg.append("oid = " + x.toValueString()).append(";\n");
+                    mst.setOid(x.toValueString());
                     continue;
                 }
                 msg.append("message = " + x.toValueString()).append(";\n");
+                mst.setMsg(x.toValueString());
             }
             //Arrays.asList(myVB).stream().forEach(x -> msg.append(x.toValueString()).append(";\n"));
+            listTraps.add(mst);
         }
-        //System.out.println("event.getPDU() = "+event.getPDU().toString());
         System.out.println("\n=============\nMessage Received: " + msg.toString());
         /*System.out.println("1 Message: " + msg.toString().split(";")[0]);
         System.out.println("2 Message: " + msg.toString().split(";")[1]);
@@ -104,7 +117,9 @@ public class SNMPTrapReceiver implements CommandResponder {
         System.out.println("event.getPeerAddress() = " + event.getPeerAddress());
         System.out.println("event.getSecurityLevel() = " + event.getSecurityLevel());
         System.out.println("event.getSecurityModel() = " + event.getSecurityModel());
-        System.out.println("event.getSecurityName() = " + new String(event.getSecurityName()));        
+        System.out.println("event.getSecurityName() = " + new String(event.getSecurityName())); 
+        System.out.println(mst);
+        System.out.println(listTraps);        
     }
     
 }
