@@ -6,7 +6,6 @@ import java.util.Objects;
 public class ModelSnmpTrap {
     
     private String ip;
-    private String oid;
     private String msg;
     private String date;
     private String time;
@@ -14,18 +13,17 @@ public class ModelSnmpTrap {
 
     @Override
     public String toString() {
-        return "ModelSnmpTrap{" + "ip=" + ip + ", oid=" + oid + ", msg=" + msg + ", date=" + date + ", time=" + time + ", community=" + community + '}';
+        return "ModelSnmpTrap={" + "ip=" + ip + ", msg=" + msg + ", date=" + date + ", time=" + time + ", community=" + community + '}';
     }
-    
+
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + Objects.hashCode(this.ip);
-        hash = 97 * hash + Objects.hashCode(this.oid);
-        hash = 97 * hash + Objects.hashCode(this.msg);
-        hash = 97 * hash + Objects.hashCode(this.date);
-        hash = 97 * hash + Objects.hashCode(this.time);
-        hash = 97 * hash + Objects.hashCode(this.community);
+        int hash = 3;
+        hash = 11 * hash + Objects.hashCode(this.ip);
+        hash = 11 * hash + Objects.hashCode(this.msg);
+        hash = 11 * hash + Objects.hashCode(this.date);
+        hash = 11 * hash + Objects.hashCode(this.time);
+        hash = 11 * hash + Objects.hashCode(this.community);
         return hash;
     }
 
@@ -42,9 +40,6 @@ public class ModelSnmpTrap {
         }
         final ModelSnmpTrap other = (ModelSnmpTrap) obj;
         if (!Objects.equals(this.ip, other.ip)) {
-            return false;
-        }
-        if (!Objects.equals(this.oid, other.oid)) {
             return false;
         }
         if (!Objects.equals(this.msg, other.msg)) {
@@ -68,14 +63,6 @@ public class ModelSnmpTrap {
 
     public void setIp(String ip) {
         this.ip = ip;
-    }
-
-    public String getOid() {
-        return oid;
-    }
-
-    public void setOid(String oid) {
-        this.oid = oid;
     }
 
     public String getMsg() {

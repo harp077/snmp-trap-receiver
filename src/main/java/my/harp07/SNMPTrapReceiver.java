@@ -3,6 +3,7 @@ package my.harp07;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import static my.harp07.ISDTF.sdf;
@@ -39,8 +40,7 @@ public class SNMPTrapReceiver implements CommandResponder {
     private Snmp snmp = null;
     private Address listenAddress;
     private ThreadPool threadPool;
-    private List<ModelSnmpTrap> listTraps=new ArrayList<>();
-    private String community="ромка1974";
+    private String community="trah-tibidoh";
 
     public void run() {
         try {
@@ -96,7 +96,8 @@ public class SNMPTrapReceiver implements CommandResponder {
             mst.setCommunity(new String(event.getSecurityName()));
             mst.setDate(sdf.format(new Date()));
             mst.setTime(stf.format(new Date()));
-            for (VariableBinding x : myVB) {
+            Arrays.asList(myVB).stream().forEach(x->msg.append(x.toString()).append("; \n"));
+            /*for (VariableBinding x : myVB) {
                 if (x.toValueString().contains(":") && StringUtils.isNumeric(x.toValueString().replace(":", "9").replace(".", "9"))) {
                     msg.append("uptime = " + x.toValueString()).append(";\n");
                     continue;
@@ -106,22 +107,18 @@ public class SNMPTrapReceiver implements CommandResponder {
                     mst.setOid(x.toValueString());
                     continue;
                 }
-                msg.append("message = " + x.toValueString()).append(";\n");
-                mst.setMsg(x.toValueString());
-            }
-            //Arrays.asList(myVB).stream().forEach(x -> msg.append(x.toValueString()).append(";\n"));
-            listTraps.add(mst);
+                //msg.append("message = " + x.toValueString()).append(";\n");
+                msg.append(x.toString()).append("; \n");
+                
+            }*/
+            mst.setMsg(msg.toString());
         }
         System.out.println("\n=============\nMessage Received: " + msg.toString());
-        /*System.out.println("1 Message: " + msg.toString().split(";")[0]);
-        System.out.println("2 Message: " + msg.toString().split(";")[1]);
-        System.out.println("3 Message: " + msg.toString().split(";")[2]);*/
         System.out.println("event.getPeerAddress() = " + event.getPeerAddress());
         System.out.println("event.getSecurityLevel() = " + event.getSecurityLevel());
         System.out.println("event.getSecurityModel() = " + event.getSecurityModel());
         System.out.println("event.getSecurityName() = " + new String(event.getSecurityName())); 
         System.out.println(mst);
-        System.out.println(listTraps);        
     }
     
 }
