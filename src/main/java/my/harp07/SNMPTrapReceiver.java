@@ -40,7 +40,7 @@ public class SNMPTrapReceiver implements CommandResponder {
     private Snmp snmp = null;
     private Address listenAddress;
     private ThreadPool threadPool;
-    private String community="trah-tibidoh";
+    private String community="apelsin-mandarin";
 
     public void run() {
         try {
@@ -88,7 +88,7 @@ public class SNMPTrapReceiver implements CommandResponder {
             return;
         }
         StringBuffer msg = new StringBuffer("\n");
-        //System.out.println("event = "+event.toString());
+        //System.out.println("event = "+event.getPDU().toString());
         VariableBinding[] myVB = event.getPDU().toArray();
         ModelSnmpTrap mst=new ModelSnmpTrap();        
         if (myVB != null && myVB.length > 0) {
@@ -113,11 +113,11 @@ public class SNMPTrapReceiver implements CommandResponder {
             }*/
             mst.setMsg(msg.toString());
         }
-        System.out.println("\n=============\nMessage Received: " + msg.toString());
-        System.out.println("event.getPeerAddress() = " + event.getPeerAddress());
+        System.out.println("\n=============");//Message Received: " + msg.toString());
+        //System.out.println("event.getPeerAddress() = " + event.getPeerAddress());
         System.out.println("event.getSecurityLevel() = " + event.getSecurityLevel());
         System.out.println("event.getSecurityModel() = " + event.getSecurityModel());
-        System.out.println("event.getSecurityName() = " + new String(event.getSecurityName())); 
+        //System.out.println("event.getSecurityName() = " + new String(event.getSecurityName())); 
         System.out.println(mst);
     }
     

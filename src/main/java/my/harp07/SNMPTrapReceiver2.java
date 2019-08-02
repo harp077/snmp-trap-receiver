@@ -2,6 +2,10 @@ package my.harp07;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Date;
+import static my.harp07.ISDTF.sdf;
+import static my.harp07.ISDTF.stf;
 import org.apache.commons.lang3.StringUtils;
 import org.snmp4j.CommandResponder;
 import org.snmp4j.CommandResponderEvent;
@@ -34,6 +38,7 @@ public class SNMPTrapReceiver2 implements CommandResponder {
     private Snmp snmp = null;
     private Address listenAddress;
     private ThreadPool threadPool;
+    private String community="apelsin-mandarin";
 
     public void run() {
         try {
@@ -72,39 +77,46 @@ public class SNMPTrapReceiver2 implements CommandResponder {
         snmp.listen();
     }
 
-    // test: # snmptrap -c public -v 2c 127.0.0.1 "" 1.3.3.3.3.3.3.3 1.2.2.2.2.2.2 s "Aliens opened the door"
+    // # snmptrap -c public -v 2c 127.0.0.1 "" 1.3.3.3.3.3.3.3 1.2.2.2.2.2.2 s "Aliens opened the door"
+    // # snmptrap -c lookin -v 2c localhost '' 1.3.6.1.4.1.8072.2.3.0.1 1.3.6.1.4.1.8072.2.3.2.1 i 123456
     @Override
     public void processPdu(CommandResponderEvent event) {
-        if (!new String(event.getSecurityName()).equals("ромка1974")) {
-            System.out.println("!!! snmp-community mismatch from: " + event.getPeerAddress());
+        if (!new String(event.getSecurityName()).equals(community)) {
+            System.out.println("!!! snmp-community mismatch from: " + event.getPeerAddress()+", must be="+community+", received="+new String(event.getSecurityName()));
             return;
         }
         StringBuffer msg = new StringBuffer("\n");
-        System.out.println("event = " + event.toString());
+        //System.out.println("event = "+event.toString());
         VariableBinding[] myVB = event.getPDU().toArray();
+        ModelSnmpTrap mst=new ModelSnmpTrap();        
         if (myVB != null && myVB.length > 0) {
-            for (VariableBinding x : myVB) {
+            mst.setIp(StringUtils.substringBefore(event.getPeerAddress().toString(),"/"));
+            mst.setCommunity(new String(event.getSecurityName()));
+            mst.setDate(sdf.format(new Date()));
+            mst.setTime(stf.format(new Date()));
+            Arrays.asList(myVB).stream().forEach(x->msg.append(x.toString()).append("; \n"));
+            /*for (VariableBinding x : myVB) {
                 if (x.toValueString().contains(":") && StringUtils.isNumeric(x.toValueString().replace(":", "9").replace(".", "9"))) {
                     msg.append("uptime = " + x.toValueString()).append(";\n");
                     continue;
                 }
                 if (x.toValueString().contains(".") && StringUtils.isNumeric(x.toValueString().replace(".", "9"))) {
                     msg.append("oid = " + x.toValueString()).append(";\n");
+                    mst.setOid(x.toValueString());
                     continue;
                 }
-                msg.append("message = " + x.toValueString()).append(";\n");
-            }
-            //Arrays.asList(myVB).stream().forEach(x -> msg.append(x.toValueString()).append(";\n"));
+                //msg.append("message = " + x.toValueString()).append(";\n");
+                msg.append(x.toString()).append("; \n");
+                
+            }*/
+            mst.setMsg(msg.toString());
         }
-        System.out.println("event.getPDU() = " + event.getPDU().toString());
-        System.out.println("\n=============\nMessage Received: " + msg.toString());
-        /*System.out.println("1 Message: " + msg.toString().split(";")[0]);
-        System.out.println("2 Message: " + msg.toString().split(";")[1]);
-        System.out.println("3 Message: " + msg.toString().split(";")[2]);*/
-        System.out.println("event.getPeerAddress() = " + event.getPeerAddress());
+        System.out.println("\n=============");//Message Received: " + msg.toString());
+        //System.out.println("event.getPeerAddress() = " + event.getPeerAddress());
         System.out.println("event.getSecurityLevel() = " + event.getSecurityLevel());
         System.out.println("event.getSecurityModel() = " + event.getSecurityModel());
-        System.out.println("event.getSecurityName() = " + new String(event.getSecurityName()));
+        //System.out.println("event.getSecurityName() = " + new String(event.getSecurityName())); 
+        System.out.println(mst);
     }
 
 }
