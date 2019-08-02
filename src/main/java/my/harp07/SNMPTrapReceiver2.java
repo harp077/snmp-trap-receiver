@@ -39,6 +39,7 @@ public class SNMPTrapReceiver2 implements CommandResponder {
     private Address listenAddress;
     private ThreadPool threadPool;
     private String community="apelsin-mandarin";
+    private int udp_port=162;
 
     public void run() {
         try {
@@ -52,7 +53,7 @@ public class SNMPTrapReceiver2 implements CommandResponder {
     private void init() throws UnknownHostException, IOException {
         threadPool = ThreadPool.create("Trap", 10);
         dispatcher = new MultiThreadedMessageDispatcher(threadPool, new MessageDispatcherImpl());
-        listenAddress = GenericAddress.parse("udp:0.0.0.0/162");
+        listenAddress = GenericAddress.parse("udp:0.0.0.0/"+udp_port);
         TransportMapping<?> transport;
         if (listenAddress instanceof UdpAddress) {
             transport = new DefaultUdpTransportMapping((UdpAddress) listenAddress);

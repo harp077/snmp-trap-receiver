@@ -2,10 +2,8 @@ package my.harp07;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import static my.harp07.ISDTF.sdf;
 import static my.harp07.ISDTF.stf;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +39,7 @@ public class SNMPTrapReceiver implements CommandResponder {
     private Address listenAddress;
     private ThreadPool threadPool;
     private String community="apelsin-mandarin";
+    private int udp_port=162;
 
     public void run() {
         try {
@@ -54,7 +53,7 @@ public class SNMPTrapReceiver implements CommandResponder {
     private void init() throws UnknownHostException, IOException {
         threadPool = ThreadPool.create("Trap", 10);
         dispatcher = new MultiThreadedMessageDispatcher(threadPool, new MessageDispatcherImpl());
-        listenAddress = GenericAddress.parse("udp:0.0.0.0/162");
+        listenAddress = GenericAddress.parse("udp:0.0.0.0/"+udp_port);
         TransportMapping<?> transport;
         if (listenAddress instanceof UdpAddress) {
             transport = new DefaultUdpTransportMapping((UdpAddress) listenAddress);
