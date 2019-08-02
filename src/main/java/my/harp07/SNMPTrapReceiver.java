@@ -87,7 +87,7 @@ public class SNMPTrapReceiver implements CommandResponder {
             return;
         }
         StringBuffer msg = new StringBuffer("\n");
-        //System.out.println("event = "+event.getPDU().toString());
+        //System.out.println("event = "+event.getStateReference().toString());
         VariableBinding[] myVB = event.getPDU().toArray();
         ModelSnmpTrap mst=new ModelSnmpTrap();        
         if (myVB != null && myVB.length > 0) {
@@ -95,7 +95,7 @@ public class SNMPTrapReceiver implements CommandResponder {
             mst.setCommunity(new String(event.getSecurityName()));
             mst.setDate(sdf.format(new Date()));
             mst.setTime(stf.format(new Date()));
-            Arrays.asList(myVB).stream().forEach(x->msg.append(x.toString()).append("; \n"));
+            Arrays.asList(myVB).stream().forEach(x->msg.append(x.getOid().toString()).append("; \n"));
             /*for (VariableBinding x : myVB) {
                 if (x.toValueString().contains(":") && StringUtils.isNumeric(x.toValueString().replace(":", "9").replace(".", "9"))) {
                     msg.append("uptime = " + x.toValueString()).append(";\n");
