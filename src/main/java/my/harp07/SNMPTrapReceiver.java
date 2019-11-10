@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static my.harp07.ISDTF.sdf;
 import static my.harp07.ISDTF.stf;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +42,7 @@ public class SNMPTrapReceiver implements CommandResponder {
     private ThreadPool threadPool;
     private String community="ромка1974";
     private int udp_port=162;
+    private TransportMapping<?> transport;
 
     public void run() {
         try {
@@ -54,7 +57,7 @@ public class SNMPTrapReceiver implements CommandResponder {
         threadPool = ThreadPool.create("Trap", 10);
         dispatcher = new MultiThreadedMessageDispatcher(threadPool, new MessageDispatcherImpl());
         listenAddress = GenericAddress.parse("udp:0.0.0.0/"+udp_port);
-        TransportMapping<?> transport;
+        //TransportMapping<?> transport;
         if (listenAddress instanceof UdpAddress) {
             transport = new DefaultUdpTransportMapping((UdpAddress) listenAddress);
         } else {
@@ -77,6 +80,15 @@ public class SNMPTrapReceiver implements CommandResponder {
                 new UsmUser(new OctetString("MD5DES"), null, null, null, null));
         snmp.listen();
     }
+    
+    public void kill() {
+        try {
+            snmp.close();
+            transport.close();
+        } catch (IOException ex) {
+            System.out.println("kill exception = " + ex.toString());
+        }
+    }    
     
     // # snmptrap -c public -v 2c 127.0.0.1 "" 1.3.3.3.3.3.3.3 1.2.2.2.2.2.2 s "Aliens opened the door"
     // # snmptrap -c lookin -v 2c localhost '' 1.3.6.1.4.1.8072.2.3.0.1 1.3.6.1.4.1.8072.2.3.2.1 i 123456
