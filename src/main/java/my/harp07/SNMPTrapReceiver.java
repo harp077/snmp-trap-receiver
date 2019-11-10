@@ -38,7 +38,7 @@ public class SNMPTrapReceiver implements CommandResponder {
     private Snmp snmp = null;
     private Address listenAddress;
     private ThreadPool threadPool;
-    private String community="apelsin-mandarin";
+    private String community="ромка1974";
     private int udp_port=162;
 
     public void run() {
@@ -80,10 +80,11 @@ public class SNMPTrapReceiver implements CommandResponder {
     
     // # snmptrap -c public -v 2c 127.0.0.1 "" 1.3.3.3.3.3.3.3 1.2.2.2.2.2.2 s "Aliens opened the door"
     // # snmptrap -c lookin -v 2c localhost '' 1.3.6.1.4.1.8072.2.3.0.1 1.3.6.1.4.1.8072.2.3.2.1 i 123456
+    // # snmptrap -c ромка1974 -v 2c 127.0.0.1 "" 1.3.3.3.3.3.3.3 1.2.2.2.2.2.2 s "Aliens opened the door"
     @Override
     public void processPdu(CommandResponderEvent event) {
         if (!new String(event.getSecurityName()).equals(community)) {
-            System.out.println("!!! snmp-community mismatch from: " + event.getPeerAddress()+", must be="+community+", received="+new String(event.getSecurityName()));
+            System.out.println("//_ ! snmp-community mismatch from: " + event.getPeerAddress()+", must be="+community+", received="+new String(event.getSecurityName()));
             return;
         }
         StringBuffer msg = new StringBuffer("\n");
